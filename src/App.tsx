@@ -3,7 +3,7 @@ import "./App.css";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { extend, useThree } from "@react-three/fiber";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
@@ -68,8 +68,8 @@ function FillWithEdges({
 
   // LineMaterial resolution
   const { size } = useThree();
-  useMemo(() => {
-    // size is in CSS pixels; LineMaterial expects renderer resolution
+
+  useEffect(() => {
     lineMat.resolution.set(size.width, size.height);
   }, [lineMat, size.width, size.height]);
 
@@ -91,7 +91,6 @@ function FillWithEdges({
       </mesh>
 
       {/* Thick edges (fat lines) */}
-      {/* @ts-expect-error - JSX intrinsic types added via .d.ts (see below) */}
       <lineSegments2 geometry={lineGeom} material={lineMat} />
     </group>
   );
@@ -102,11 +101,10 @@ function Model() {
 
   return (
     <group>
-      <primitive object={nodes.Plus} />
-      {/* <FillWithEdges obj={nodes.Plus} lineWidth={4} /> */}
-      <FillWithEdges obj={nodes.Square} lineWidth={4} />
-      <primitive object={nodes.Hexagon} />
-      <primitive object={nodes.Cover} />
+      <FillWithEdges obj={nodes.Plus} lineWidth={3} spin={false} />
+      <FillWithEdges obj={nodes.Square} lineWidth={3} />
+      <FillWithEdges obj={nodes.Hexagon} lineWidth={3} spin={false} />
+      <FillWithEdges obj={nodes.Cover} lineWidth={3} spin={false} />
     </group>
   );
 }
