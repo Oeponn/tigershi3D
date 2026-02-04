@@ -2,23 +2,80 @@ import "./App.css";
 
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
+import { extend, useThree } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
+import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
+import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 
 import styles from "./App.module.scss";
 import reactLogo from "./assets/react.svg";
 
-function FillWithEdges({ obj }: { obj: THREE.Object3D }) {
+extend({ LineSegments2, LineMaterial, LineSegmentsGeometry });
+
+function FillWithEdges({
+  obj,
+  fill = "#fff",
+  stroke = "#333",
+  lineWidth = 3, // pixels
+  threshold = 20,
+  spin = true,
+  spinSpeed = 0.5,
+}: {
+  obj: THREE.Object3D;
+  fill?: string;
+  stroke?: string;
+  lineWidth?: number;
+  threshold?: number;
+  spin?: boolean;
+  spinSpeed?: number;
+}) {
   const groupRef = useRef<THREE.Group | null>(null);
 
   const mesh = obj as THREE.Mesh;
   const geom = mesh.geometry as THREE.BufferGeometry;
 
-  const edges = useMemo(() => new THREE.EdgesGeometry(geom, 20), [geom]);
+  // 1) Build edges (thin geometry)
+  const edgesGeom = useMemo(
+    () => new THREE.EdgesGeometry(geom, threshold),
+    [geom, threshold],
+  );
+
+  // 2) Convert EdgesGeometry -> LineSegmentsGeometry positions
+  const lineGeom = useMemo(() => {
+    const g = new LineSegmentsGeometry();
+    const pos = edgesGeom.attributes.position.array as ArrayLike<number>;
+    // type error
+    // g.setPositions(pos);
+    g.setPositions(new Float32Array(pos));
+    return g;
+  }, [edgesGeom]);
+
+  // 3) Create fat-line material
+  const lineMat = useMemo(() => {
+    const m = new LineMaterial({
+      color: new THREE.Color(stroke),
+      linewidth: lineWidth, // pixels (when worldUnits = false)
+      transparent: true,
+      depthTest: true,
+      depthWrite: false,
+    });
+    // Pixel-sized lines consistently
+    m.worldUnits = false;
+    return m;
+  }, [stroke, lineWidth]);
+
+  // LineMaterial resolution
+  const { size } = useThree();
+  useMemo(() => {
+    // size is in CSS pixels; LineMaterial expects renderer resolution
+    lineMat.resolution.set(size.width, size.height);
+  }, [lineMat, size.width, size.height]);
 
   useFrame((_, delta) => {
-    if (!groupRef.current) return;
-    groupRef.current.rotation.z += delta;
+    if (!spin || !groupRef.current) return;
+    groupRef.current.rotation.z += delta * spinSpeed;
   });
 
   return (
@@ -30,13 +87,12 @@ function FillWithEdges({ obj }: { obj: THREE.Object3D }) {
     >
       {/* Fill (unlit) */}
       <mesh geometry={geom}>
-        <meshBasicMaterial color="#fff" />
+        <meshBasicMaterial color={fill} />
       </mesh>
 
-      {/* Edges overlay */}
-      <lineSegments geometry={edges}>
-        <lineBasicMaterial color="#333" />
-      </lineSegments>
+      {/* Thick edges (fat lines) */}
+      {/* @ts-expect-error - JSX intrinsic types added via .d.ts (see below) */}
+      <lineSegments2 geometry={lineGeom} material={lineMat} />
     </group>
   );
 }
@@ -47,7 +103,8 @@ function Model() {
   return (
     <group>
       <primitive object={nodes.Plus} />
-      <FillWithEdges obj={nodes.Square} />
+      {/* <FillWithEdges obj={nodes.Plus} lineWidth={4} /> */}
+      <FillWithEdges obj={nodes.Square} lineWidth={4} />
       <primitive object={nodes.Hexagon} />
       <primitive object={nodes.Cover} />
     </group>
