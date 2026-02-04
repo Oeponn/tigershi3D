@@ -29,13 +29,10 @@ export default function Landing() {
         <section
           ref={sceneRef}
           style={{
-            height: "100vh",
-            // display: "flex",
-            // alignItems: "center",
-            // justifyContent: "center",
+            height: "200vh",
           }}
         >
-          <h1>Tiger Shi</h1>
+          {/* <h1>Tiger Shi</h1> */}
           <App />
         </section>
       </main>
