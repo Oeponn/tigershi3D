@@ -2,28 +2,52 @@ import "./App.css";
 
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 import styles from "./App.module.scss";
 import reactLogo from "./assets/react.svg";
 
+function FillWithEdges({ obj }: { obj: THREE.Object3D }) {
+  const groupRef = useRef<THREE.Group | null>(null);
+
+  const mesh = obj as THREE.Mesh;
+  const geom = mesh.geometry as THREE.BufferGeometry;
+
+  const edges = useMemo(() => new THREE.EdgesGeometry(geom, 20), [geom]);
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) return;
+    groupRef.current.rotation.z += delta;
+  });
+
+  return (
+    <group
+      ref={groupRef}
+      position={mesh.position}
+      rotation={mesh.rotation}
+      scale={mesh.scale}
+    >
+      {/* Fill (unlit) */}
+      <mesh geometry={geom}>
+        <meshBasicMaterial color="#fff" />
+      </mesh>
+
+      {/* Edges overlay */}
+      <lineSegments geometry={edges}>
+        <lineBasicMaterial color="#333" />
+      </lineSegments>
+    </group>
+  );
+}
+
 function Model() {
   const { nodes } = useGLTF("/tigershi-test-3d.glb");
 
-  const squareRef = useRef<THREE.Object3D | null>(null);
-
-  useFrame((_, delta: number) => {
-    if (!squareRef.current) return;
-    squareRef.current.rotation.z += delta;
-  });
-
-  // You WILL see a `Scene` node — that's expected
-  // We care about the named meshes
   return (
     <group>
       <primitive object={nodes.Plus} />
-      <primitive ref={squareRef} object={nodes.Square} />
+      <FillWithEdges obj={nodes.Square} />
       <primitive object={nodes.Hexagon} />
       <primitive object={nodes.Cover} />
     </group>
