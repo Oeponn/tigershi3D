@@ -19,9 +19,10 @@ function FillWithEdges({
   fill = "#fff",
   stroke = "#333",
   lineWidth = 3, // pixels
-  threshold = 20,
+  threshold = 10,
   spin = true,
   spinSpeed = 0.5,
+  lit = false,
 }: {
   obj: THREE.Object3D;
   fill?: string;
@@ -30,6 +31,7 @@ function FillWithEdges({
   threshold?: number;
   spin?: boolean;
   spinSpeed?: number;
+  lit?: boolean;
 }) {
   const groupRef = useRef<THREE.Group | null>(null);
 
@@ -58,6 +60,7 @@ function FillWithEdges({
       color: new THREE.Color(stroke),
       linewidth: lineWidth, // pixels (when worldUnits = false)
       transparent: true,
+      // depthTest: true,
       depthTest: true,
       depthWrite: false,
     });
@@ -87,7 +90,23 @@ function FillWithEdges({
     >
       {/* Fill (unlit) */}
       <mesh geometry={geom}>
-        <meshBasicMaterial color={fill} />
+        {lit ? (
+          <meshStandardMaterial
+            color={fill}
+            roughness={0.9}
+            metalness={0}
+            polygonOffset
+            polygonOffsetFactor={lineWidth}
+            polygonOffsetUnits={lineWidth}
+          />
+        ) : (
+          <meshBasicMaterial
+            color={fill}
+            polygonOffset
+            polygonOffsetFactor={lineWidth}
+            polygonOffsetUnits={lineWidth}
+          />
+        )}
       </mesh>
 
       {/* Thick edges (fat lines) */}
@@ -97,14 +116,15 @@ function FillWithEdges({
 }
 
 function Model() {
+  const LINE_WIDTH = 1;
   const { nodes } = useGLTF("/tigershi-test-3d.glb");
 
   return (
     <group>
-      <FillWithEdges obj={nodes.Plus} lineWidth={3} spin={false} />
-      <FillWithEdges obj={nodes.Square} lineWidth={3} />
-      <FillWithEdges obj={nodes.Hexagon} lineWidth={3} spin={false} />
-      <FillWithEdges obj={nodes.Cover} lineWidth={3} spin={false} />
+      <FillWithEdges obj={nodes.Plus} lineWidth={LINE_WIDTH} spin={false} />
+      <FillWithEdges obj={nodes.Square} lineWidth={LINE_WIDTH} lit />
+      <FillWithEdges obj={nodes.Hexagon} lineWidth={LINE_WIDTH} spin={false} />
+      <FillWithEdges obj={nodes.Cover} lineWidth={LINE_WIDTH} spin={false} />
     </group>
   );
 }
@@ -114,15 +134,17 @@ function App() {
 
   return (
     <>
-      <div>
+      <div className={styles.ready}>
         <div className={styles.canvasWrapper}>
           <Canvas
-            camera={{ position: [0, 0, 7], fov: 50 }}
+            // camera={{ position: [5, 5, 5], fov: 35 }}
+            camera={{ position: [0, 0, 250], fov: 1 }}
             style={{ width: "100vw", height: "100vh" }}
+            gl={{ antialias: true, toneMapping: THREE.NoToneMapping }}
           >
             {/* Basic lighting so you can see things */}
             <ambientLight intensity={0.5} />
-            <directionalLight position={[5, 5, 5]} intensity={1} />
+            <directionalLight position={[5, 5, 5]} intensity={10} />
 
             <Model />
 
