@@ -1,0 +1,16 @@
+.progressBarContainer {
+  height: 35px;
+  width: 350px;
+  border-radius: 5px;
+  border: 1px solid white;
+  position: fixed;
+  right: 4rem;
+  bottom: 4rem;
+  overflow: hidden;
+}
+
+.progressBar {
+  background-color: rgb(62, 38, 38);
+  height: 100%;
+  width: 100%;
+}
