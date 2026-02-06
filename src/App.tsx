@@ -151,23 +151,26 @@ function Model() {
 
 function App() {
   return (
-    <div className={styles.canvasWrapper}>
-      <ProgressBar />
-      <Canvas
-        camera={{ position: [5, 5, 5], fov: 35 }}
-        // camera={{ position: [0, 0, 250], fov: 1 }}
-        style={{ width: "100vw", height: "100vh" }}
-        gl={{ antialias: true, toneMapping: THREE.NoToneMapping }}
-      >
-        {/* Basic lighting so you can see things */}
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[5, 5, 5]} intensity={10} />
+    <div className={styles.appWrapper}>
+      <div className={styles.filler} />
+      <div className={styles.canvasWrapper}>
+        <ProgressBar />
+        <Canvas
+          camera={{ position: [5, 5, 5], fov: 35 }}
+          // camera={{ position: [0, 0, 250], fov: 1 }}
+          style={{ width: "100vw", height: "100vh" }}
+          gl={{ antialias: true, toneMapping: THREE.NoToneMapping }}
+        >
+          {/* Basic lighting so you can see things */}
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[5, 5, 5]} intensity={10} />
 
-        <Model />
+          <Model />
 
-        {/* Temporary: lets you orbit and verify geometry */}
-        <OrbitControls />
-      </Canvas>
+          {/* Temporary: lets you orbit and verify geometry */}
+          <OrbitControls />
+        </Canvas>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 
 import App from "../App";
+import styles from "./landing.module.scss";
 
 export default function Landing() {
   const sceneRef = useRef<HTMLDivElement | null>(null);
@@ -26,12 +27,7 @@ export default function Landing() {
       </Helmet>
 
       <main>
-        <section
-          ref={sceneRef}
-          style={{
-            height: "200vh",
-          }}
-        >
+        <section ref={sceneRef} className={styles.landingSection}>
           {/* <h1>Tiger Shi</h1> */}
           <App />
         </section>
