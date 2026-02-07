@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 
-import App from "../App";
+// import App from "../App";
+import App from "../App2";
 import styles from "./landing.module.scss";
 
 export default function Landing() {
@@ -28,7 +29,6 @@ export default function Landing() {
 
       <main>
         <section ref={sceneRef} className={styles.landingSection}>
-          {/* <h1>Tiger Shi</h1> */}
           <App />
         </section>
       </main>

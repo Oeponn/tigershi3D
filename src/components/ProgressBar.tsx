@@ -1,8 +1,12 @@
 import styles from "./ProgressBar.module.scss";
 
-function ProgressBar() {
+function ProgressBar({
+  progressBarRef,
+}: {
+  progressBarRef?: React.Ref<HTMLDivElement>;
+}) {
   return (
-    <div className={styles.progressBarContainer}>
+    <div ref={progressBarRef} className={styles.progressBarContainer}>
       <div className={styles.progressBar}></div>
     </div>
   );

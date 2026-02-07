@@ -1,6 +1,7 @@
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { extend, useThree } from "@react-three/fiber";
+import { animate, createScope, onScroll, type Scope } from "animejs";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
@@ -9,6 +10,7 @@ import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeome
 
 import styles from "./App.module.scss";
 import ProgressBar from "./components/ProgressBar";
+import progressBarClassNames from "./components/ProgressBar.module.scss";
 
 extend({ LineSegments2, LineMaterial, LineSegmentsGeometry });
 
@@ -150,26 +152,152 @@ function Model() {
 }
 
 function App() {
+  const root = useRef<HTMLDivElement>(null);
+  const $scope = useRef<Scope | null>(null);
+  useEffect(() => {
+    $scope.current = createScope({ root }).add((self) => {
+      // Every anime.js instance declared here is now scoped to <div ref={root}>
+
+      animate(".progressBar", {
+        width: ["0%", "100%"],
+        easing: "linear",
+        autoplay: onScroll({
+          // container: ".scrollContainer",
+          // target: ".scrollContainer",
+          target: `.${styles.filler}`,
+          axis: "y",
+          enter: "top top",
+          leave: "bottom bottom",
+          // sync: true,
+          sync: 0.8,
+          // debug: true,
+          onEnter: () => {
+            console.log("Entered progress bar animation");
+          },
+          onLeave: () => {
+            console.log("Left progress bar animation");
+          },
+        }),
+      });
+
+      // animate(".progressBarContainer", {
+      //   opacity: [0, 1],
+      //   y: [100, 0],
+      //   duration: 300,
+      //   easing: "linear",
+      //   autoplay: onScroll({
+      //     target: `.${styles.filler}`,
+      //     axis: "y",
+      //     enter: "top 150px",
+      //     leave: "bottom bottom",
+      //     // sync: "play reverse play reverse",
+      //     sync: "play reverse",
+      //     debug: true,
+      //   }),
+      // });
+
+      return () => {
+        $scope.current?.revert();
+      };
+    }, []);
+
+    // useEffect(() => {
+    //   animate(".progressBar", {
+    //     width: ["0%", "100%"],
+    //     easing: "linear",
+    //     autoplay: onScroll({
+    //       // container: ".scrollContainer",
+    //       // target: ".scrollContainer",
+    //       target: `.${styles.filler}`,
+    //       axis: "y",
+    //       enter: "top top",
+    //       leave: "bottom bottom",
+    //       sync: true,
+    //       // sync: 0.8,
+    //       debug: true,
+    //       onEnter: () => console.log("Entered scroll area"),
+    //       onLeave: () => console.log("Left scroll area"),
+    //     }),
+    //   });
+    // animate(".progressBarContainer", {
+    //   // opacity: [0, 1],
+    //   y: [100, 0],
+    //   duration: 300,
+    //   easing: "linear",
+    //   autoplay: onScroll({
+    //     // target: ".scrollContainer",
+    //     target: `.${styles.appWrapper}`,
+    //     axis: "y",
+    //     enter: "top 150px",
+    //     leave: "bottom bottom",
+    //     // sync: "play reverse play reverse",
+    //     sync: "play reverse",
+    //     debug: true,
+    //   }),
+    // });
+  }, []);
+  // const progressBarRef = useRef<HTMLDivElement>(null);
+
+  // useEffect(() => {
+  //   const progressBarContainer = progressBarRef.current;
+  //   if (!progressBarContainer) return;
+
+  //   const { progressBar } = progressBarClassNames;
+
+  //   const $bar = progressBarContainer.querySelector<HTMLDivElement>(
+  //     `.${progressBar}`,
+  //   );
+
+  //   animate(progressBarContainer, {
+  //     scale: [{ to: 1.05, ease: "inOut(3)", duration: 200 }, { to: 1 }],
+  //     loop: true,
+  //     loopDelay: 1000,
+  //   });
+
+  //   // animate(progressBarContainer, {
+  //   animate($bar!, {
+  //     // width: ["0%", "100%"],
+  //     width: ["0px", "500px"],
+  //     // height: ["0px", "500px"],
+  //     // loop: true,
+  //     autoplay: onScroll({
+  //       // container: `#root`,
+  //       // target: `.${styles.appWrapper}`,
+  //       target: `.${styles.innerContainer}`,
+  //       // enter: "top 100px",
+  //       // leave: "bottom 90%",
+  //       debug: true,
+  //       // sync: "play reverse",
+  //       // sync: 1,
+  //       onEnter: () => console.log("Entered scroll area"),
+  //       onLeave: () => console.log("Left scroll area"),
+  //     }),
+  //   });
+  // }, []);
+
   return (
-    <div className={styles.appWrapper}>
-      <div className={styles.filler} />
+    <div className={styles.appWrapper} ref={root}>
+      {/* <div className={"scrollContainer"}> */}
+      <div className={styles.filler}>
+        {/* <ProgressBar progressBarRef={progressBarRef} /> */}
+        <div className="progressBarContainer">
+          <div className="progressBar" />
+        </div>
+      </div>
       <div className={styles.canvasWrapper}>
-        <ProgressBar />
-        <Canvas
+        {/* <Canvas
           camera={{ position: [5, 5, 5], fov: 35 }}
           // camera={{ position: [0, 0, 250], fov: 1 }}
           style={{ width: "100vw", height: "100vh" }}
           gl={{ antialias: true, toneMapping: THREE.NoToneMapping }}
         >
-          {/* Basic lighting so you can see things */}
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={10} />
 
           <Model />
 
-          {/* Temporary: lets you orbit and verify geometry */}
           <OrbitControls />
-        </Canvas>
+        </Canvas> */}
       </div>
     </div>
   );

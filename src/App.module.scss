@@ -1,7 +1,8 @@
 .appWrapper {
-  width: 100%;
+  width: 100vw;
   border: 1px solid yellow;
   box-sizing: border-box;
+  padding: 4rem 2rem;
 }
 
 .canvasWrapper {
@@ -19,4 +20,10 @@
   height: 8000px;
   width: 100%;
   box-sizing: border-box;
+}
+
+.innerContainer {
+  height: 100%;
+  width: 100%;
+  // background-color: rgba(255, 0, 0, 0.266);
 }

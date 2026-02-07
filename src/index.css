@@ -14,6 +14,11 @@
   -moz-osx-font-smoothing: grayscale;
   width: 100vw;
 }
+/* 
+#root {
+  height: 100dvh;
+  overflow: auto;
+} */
 
 a {
   font-weight: 500;
@@ -67,4 +72,32 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.progressBarContainer {
+  width: 350px;
+  height: 35px;
+  border: 1px solid #007acc;
+  background-color: #242424;
+  border-radius: 10px;
+  position: fixed;
+  bottom: 4rem;
+  right: 4rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  /* overflow: hidden; */
+  /* opacity: 0; */
+  z-index: 100;
+}
+
+.progressBar {
+  position: relative;
+  height: 20%;
+  /* height: 100%; */
+  border-radius: 2px;
+  background-color: #007acc;
+  font-size: 3rem;
 }
