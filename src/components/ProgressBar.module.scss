@@ -1,21 +1,41 @@
+// .progressBarContainer {
+//   height: 35px;
+//   width: 350px;
+//   border-radius: 5px;
+//   border: 1px solid white;
+//   position: fixed;
+//   right: 4rem;
+//   bottom: 4rem;
+//   overflow: hidden;
+//   display: flex;
+//   justify-content: flex-start;
+//   align-items: center;
+//   padding: 0 1rem;
+//   box-sizing: border-box;
+// }
+
 .progressBarContainer {
-  height: 35px;
   width: 350px;
-  border-radius: 5px;
-  border: 1px solid white;
+  height: 35px;
+  border: 1px solid #007acc;
+  background-color: #242424;
+  border-radius: 10px;
   position: fixed;
-  right: 4rem;
   bottom: 4rem;
-  overflow: hidden;
+  right: 4rem;
+  z-index: 10;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   padding: 0 1rem;
   box-sizing: border-box;
+  overflow: hidden;
+  opacity: 0;
 }
 
 .progressBar {
-  background-color: rgb(214, 78, 78);
-  height: 4px;
-  width: 100%;
+  position: relative;
+  height: 20%;
+  border-radius: 2px;
+  background-color: #007acc;
 }

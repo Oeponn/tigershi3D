@@ -17,19 +17,39 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./App.module.scss";
 import Canti from "./components/Canti";
 import ProgressBar from "./components/ProgressBar";
-// import progressBarStyles from ".components/ProgressBar.module.scss";
+import { progressBar } from "./components/ProgressBar.module.scss";
+
+console.log("Progress bar class name:", progressBar);
 
 function App() {
-  const root = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const $scope = useRef<Scope | null>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    $scope.current = createScope({ root }).add((_self) => {
-      animate(".progressBar", {
+    $scope.current = createScope({ root: rootRef }).add((_self) => {
+      if (!progressBarRef.current) return;
+
+      animate(progressBarRef.current, {
+        opacity: [0, 1],
+        y: [100, 0],
+        duration: 300,
+        easing: "linear",
+        autoplay: onScroll({
+          target: ".scrollContainer",
+          axis: "y",
+          enter: "top 150px",
+          leave: "bottom bottom",
+          // sync: "play reverse play reverse",
+          sync: "play reverse",
+          debug: true,
+        }),
+      });
+
+      animate(`.${progressBar}`, {
         width: ["0%", "100%"],
         easing: "linear",
         autoplay: onScroll({
-          // container: ".scrollContainer",
           target: ".scrollContainer",
           axis: "y",
           enter: "top top",
@@ -45,22 +65,6 @@ function App() {
           },
         }),
       });
-
-      animate(".progressBarContainer", {
-        opacity: [0, 1],
-        y: [100, 0],
-        duration: 300,
-        easing: "linear",
-        autoplay: onScroll({
-          target: ".scrollContainer",
-          axis: "y",
-          enter: "top 150px",
-          leave: "bottom bottom",
-          // sync: "play reverse play reverse",
-          sync: "play reverse",
-          debug: true,
-        }),
-      });
     });
 
     return () => {
@@ -70,13 +74,11 @@ function App() {
 
   return (
     <div
-      ref={root}
+      ref={rootRef}
       className="scrollContainer"
       style={{ border: "2px solid red" }}
     >
-      <div className="progressBarContainer">
-        <div className="progressBar" />
-      </div>
+      <ProgressBar progressBarRef={progressBarRef} />
       <div style={{ height: "8000px" }}></div>
       <div className={styles.canvasWrapper}>
         <Canti />
