@@ -29,9 +29,13 @@ function App() {
 
   useEffect(() => {
     $scope.current = createScope({ root: rootRef }).add((_self) => {
-      if (!progressBarRef.current) return;
+      const progressBarContainer = progressBarRef.current;
+      if (!progressBarContainer) {
+        console.error("No progress bar container found");
+        return;
+      }
 
-      animate(progressBarRef.current, {
+      animate(progressBarContainer, {
         opacity: [0, 1],
         y: [100, 0],
         duration: 300,
@@ -46,7 +50,13 @@ function App() {
         }),
       });
 
-      animate(cls(progressBar), {
+      const innerBar = progressBarContainer.querySelector(cls(progressBar));
+      if (!innerBar) {
+        console.error("No inner progress bar found");
+        return;
+      }
+
+      animate(innerBar, {
         width: ["0%", "100%"],
         easing: "linear",
         autoplay: onScroll({
