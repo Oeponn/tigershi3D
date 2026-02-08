@@ -18,8 +18,6 @@ import ProgressBar from "./components/ProgressBar";
 import { progressBar } from "./components/ProgressBar.module.scss";
 import { cls } from "./utils/domReferenceHelpers";
 
-console.log("Progress bar class name:", progressBar);
-
 function App() {
   const rootRef = useRef<HTMLDivElement>(null);
   const $scope = useRef<Scope | null>(null);
@@ -73,11 +71,7 @@ function App() {
   }, []);
 
   return (
-    <div
-      ref={rootRef}
-      className={styles.scrollContainer}
-      style={{ border: "2px solid red" }}
-    >
+    <div ref={rootRef} className={styles.scrollContainer}>
       <div>Hello</div>
       <ProgressBar progressBarRef={progressBarRef} />
       <div style={{ height: "8000px" }}></div>
