@@ -13,7 +13,15 @@ function App() {
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   // This is what animejs will mutate (no rerenders)
-  const cameraProgressRef = useRef<{ p: number }>({ p: 0 });
+  const cameraStateRef = useRef({
+    x: 0,
+    y: 0,
+    z: 6, // camera position
+    tx: 0,
+    ty: 0,
+    tz: 0, // look-at target / OrbitControls target
+    fov: 55,
+  });
 
   useEffect(() => {
     $scope.current = createScope({ root: rootRef }).add(() => {
@@ -25,12 +33,12 @@ function App() {
         duration: 300,
         easing: "linear",
         autoplay: onScroll({
-          target: ".scrollContainer",
+          target: cls(styles.scrollContainer),
           axis: "y",
           enter: "top 150px",
           leave: "bottom bottom",
           sync: "play reverse",
-          debug: true,
+          // debug: true,
         }),
       });
 
@@ -39,7 +47,7 @@ function App() {
         width: ["0%", "100%"],
         easing: "linear",
         autoplay: onScroll({
-          target: ".scrollContainer",
+          target: cls(styles.scrollContainer),
           axis: "y",
           enter: "top top",
           leave: "bottom bottom",
@@ -47,19 +55,29 @@ function App() {
         }),
       });
 
+      const cam = cameraStateRef.current;
+
       // ---- Camera progress on scroll (NEW) ----
       // This ties p:0 -> p:1 to scroll progress.
-      animate(cameraProgressRef.current, {
-        p: [0, 1],
+      animate(cam, {
+        // keyframes define the path
+        keyframes: [
+          { x: 0, y: 0, z: 5, tx: 0, ty: 0, tz: 0, fov: 65 },
+          { x: 0, y: 0, z: 5, tx: 0, ty: 0, tz: 0, fov: 65 },
+        ],
         easing: "linear",
-        autoplay: onScroll({
-          target: ".scrollContainer",
-          axis: "y",
-          enter: "top top",
-          leave: "bottom bottom",
-          sync: 1, // 1:1 with scroll
-          // debug: true,
-        }),
+        // autoplay: onScroll({
+        //   target: cls(styles.scrollContainer),
+        //   axis: "y",
+        //   enter: "top top",
+        //   leave: "bottom bottom",
+        //   sync: 0.5,
+        //   debug: true,
+        // }),
+        autoplay: true,
+        loop: true,
+        alternate: true,
+        duration: 5000,
       });
     });
 
@@ -75,7 +93,7 @@ function App() {
       <div style={{ height: "8000px" }} />
 
       <div className={styles.canvasWrapper}>
-        <Canti cameraProgressRef={cameraProgressRef} />
+        <Canti cameraStateRef={cameraStateRef} />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { extend } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
@@ -23,49 +23,50 @@ function clamp01(x: number) {
  * Reads progressRef.current.p (0..1) and moves the camera around the model.
  * Works well with OrbitControls if we update controls.target + call update().
  */
-function CameraRig({
-  progressRef,
+function ApplyCameraState({
+  cameraRef,
+  cameraStateRef,
   controlsRef,
-  target = new THREE.Vector3(0, 0, 0),
+  smoothing = 0.15,
 }: {
-  progressRef: React.RefObject<{ p: number }>;
+  cameraRef: React.RefObject<THREE.PerspectiveCamera | null>;
+  cameraStateRef: React.RefObject<{
+    x: number;
+    y: number;
+    z: number;
+    tx: number;
+    ty: number;
+    tz: number;
+    fov: number;
+  }>;
   controlsRef: React.RefObject<any>;
-  target?: THREE.Vector3;
+  smoothing?: number;
 }) {
-  const { camera } = useThree();
-
-  // Re-used vectors to avoid allocations every frame
   const desiredPos = useRef(new THREE.Vector3());
-  const tmpTarget = useRef(target.clone());
+  const desiredTarget = useRef(new THREE.Vector3());
 
-  useFrame((_, delta) => {
-    const p = clamp01(progressRef.current?.p ?? 0);
+  useFrame(() => {
+    const cam = cameraRef.current;
+    const s = cameraStateRef.current;
+    if (!cam || !s) return;
 
-    // --- You can tune these ---
-    const radius = lerp(6, 3.75, p); // zoom-in slightly as you scroll
-    const theta = lerp(0, Math.PI * 1.15, p); // orbit around Y
-    const phi = lerp(Math.PI * 0.48, Math.PI * 0.32, p); // tilt (lower phi = higher camera)
+    desiredPos.current.set(s.x, s.y, s.z);
+    desiredTarget.current.set(s.tx, s.ty, s.tz);
 
-    // Spherical -> Cartesian (Y up)
-    const x = radius * Math.sin(phi) * Math.sin(theta);
-    const y = radius * Math.cos(phi);
-    const z = radius * Math.sin(phi) * Math.cos(theta);
+    cam.position.lerp(desiredPos.current, smoothing);
 
-    desiredPos.current.set(x, y, z);
-
-    // Smooth a bit so it doesn’t feel jittery with scroll
-    const smooth = 1 - Math.pow(0.001, delta); // framerate-independent smoothing
-    camera.position.lerp(desiredPos.current, smooth);
-
-    // Look at target (or update OrbitControls target)
-    tmpTarget.current.copy(target);
+    // fov (PerspectiveCamera only)
+    if (cam.fov !== s.fov) {
+      cam.fov = s.fov;
+      cam.updateProjectionMatrix();
+    }
 
     const controls = controlsRef.current;
     if (controls) {
-      controls.target.copy(tmpTarget.current);
+      controls.target.lerp(desiredTarget.current, smoothing);
       controls.update();
     } else {
-      camera.lookAt(tmpTarget.current);
+      cam.lookAt(desiredTarget.current);
     }
   });
 
@@ -219,28 +220,47 @@ function CantiModel() {
  * We pass in a progressRef (a stable object) that animejs mutates.
  */
 function Canti({
-  cameraProgressRef,
+  cameraStateRef,
 }: {
-  cameraProgressRef: React.RefObject<{ p: number }>;
+  cameraStateRef: React.RefObject<{
+    x: number;
+    y: number;
+    z: number;
+    tx: number;
+    ty: number;
+    tz: number;
+    fov: number;
+  }>;
 }) {
   const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera>(null);
 
   return (
     <Canvas
-      camera={{ position: [0, 0, 6], fov: 55 }}
+      // Don't pass camera here as a plain object if you plan to mutate it.
+      // We'll mount our own PerspectiveCamera as the default camera.
       style={{ width: "100vw", height: "100vh" }}
       gl={{ antialias: true, toneMapping: THREE.NoToneMapping }}
     >
+      {/* Make this the default camera */}
+      <PerspectiveCamera
+        ref={cameraRef}
+        makeDefault
+        position={[0, 0, 6]}
+        fov={55}
+        near={0.1}
+        far={1000}
+      />
+
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={10} />
 
       <CantiModel />
 
-      {/* Camera animation driven by animejs progress */}
-      <CameraRig
-        progressRef={cameraProgressRef}
+      <ApplyCameraState
+        cameraRef={cameraRef}
+        cameraStateRef={cameraStateRef}
         controlsRef={controlsRef}
-        target={new THREE.Vector3(0, 0, 0)}
       />
 
       <OrbitControls
@@ -248,8 +268,6 @@ function Canti({
         maxDistance={20}
         minDistance={3}
         enableZoom={false}
-        // Optional: prevent user fighting the scroll-driven camera
-        // enableRotate={false}
       />
     </Canvas>
   );
