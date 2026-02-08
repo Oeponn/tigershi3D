@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".", 
-    "rootDirs": ["src", "src/types"], 
+    "rootDirs": ["src", "src/types", "__generated__"], 
     "paths": {
       "*.module.scss": ["src/*.module.scss", "src/types/*.module.scss"]
     },
