@@ -1,5 +1,3 @@
-import "./App.css";
-
 import {
   animate,
   createDraggable,
@@ -77,9 +75,10 @@ function App() {
   return (
     <div
       ref={rootRef}
-      className="scrollContainer"
+      className={styles.scrollContainer}
       style={{ border: "2px solid red" }}
     >
+      <div>Hello</div>
       <ProgressBar progressBarRef={progressBarRef} />
       <div style={{ height: "8000px" }}></div>
       <div className={styles.canvasWrapper}>
