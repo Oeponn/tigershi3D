@@ -2,7 +2,7 @@ import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { extend, useThree } from "@react-three/fiber";
 // import { animate, createScope, onScroll, type Scope } from "animejs";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
@@ -118,34 +118,100 @@ function FillWithEdges({
   );
 }
 
-function Model() {
-  const { nodes } = useGLTF("/tigershi-test-3d.glb");
+// function Model() {
+//   const { nodes } = useGLTF("/tigershi-test-3d.glb");
+
+//   return (
+//     <group>
+//       <FillWithEdges
+//         obj={nodes.Plus}
+//         lineWidth={LINE_WIDTH}
+//         spin={false}
+//         // lit
+//       />
+//       <FillWithEdges
+//         obj={nodes.Square}
+//         lineWidth={LINE_WIDTH}
+//         // lit
+//       />
+//       <FillWithEdges
+//         obj={nodes.Hexagon}
+//         lineWidth={LINE_WIDTH}
+//         spin={false}
+//         // lit
+//       />
+//       <FillWithEdges
+//         obj={nodes.Cover}
+//         lineWidth={LINE_WIDTH}
+//         reverse={true}
+//         // spin={false}
+//         // lit
+//       />
+//     </group>
+//   );
+// }
+
+function CantiModel() {
+  const { nodes } = useGLTF("/canti-draft.glb");
+  console.log("cantiNodes:", nodes);
 
   return (
     <group>
       <FillWithEdges
-        obj={nodes.Plus}
+        obj={nodes.A_Frame}
         lineWidth={LINE_WIDTH}
         spin={false}
         // lit
       />
       <FillWithEdges
-        obj={nodes.Square}
-        lineWidth={LINE_WIDTH}
-        // lit
-      />
-      <FillWithEdges
-        obj={nodes.Hexagon}
+        obj={nodes.A_Screen}
         lineWidth={LINE_WIDTH}
         spin={false}
-        // lit
+        threshold={20}
+      />
+      <FillWithEdges obj={nodes.B_Sides} lineWidth={LINE_WIDTH} spin={false} />
+      <FillWithEdges
+        obj={nodes.C_Cover}
+        lineWidth={LINE_WIDTH}
+        reverse={true}
+        spin={false}
       />
       <FillWithEdges
-        obj={nodes.Cover}
+        obj={nodes.E_NodeCover}
+        lineWidth={LINE_WIDTH}
+        reverse={true}
+        spin={false}
+      />
+      <FillWithEdges
+        obj={nodes.F_Node}
+        lineWidth={LINE_WIDTH}
+        reverse={true}
+        spin={false}
+      />
+      <FillWithEdges
+        obj={nodes.G_Cover_Inner}
+        lineWidth={LINE_WIDTH}
+        reverse={true}
+        spin={false}
+        threshold={4}
+      />
+      <FillWithEdges
+        obj={nodes.H_Tube_Connector}
+        lineWidth={LINE_WIDTH}
+        reverse={true}
+        spin={false}
+      />
+      <FillWithEdges
+        obj={nodes.I_Tube}
+        lineWidth={LINE_WIDTH}
+        // reverse={true}
+        // spin={false}
+      />
+      <FillWithEdges
+        obj={nodes.J_Cap}
         lineWidth={LINE_WIDTH}
         reverse={true}
         // spin={false}
-        // lit
       />
     </group>
   );
@@ -154,7 +220,8 @@ function Model() {
 function Canti() {
   return (
     <Canvas
-      camera={{ position: [5, 5, 5], fov: 35 }}
+      camera={{ position: [5, -5, 5], fov: 35 }}
+      // camera={{ position: [0, 0, 5], fov: 70 }}
       // camera={{ position: [0, 0, 250], fov: 1 }}
       style={{ width: "100vw", height: "100vh" }}
       gl={{ antialias: true, toneMapping: THREE.NoToneMapping }}
@@ -162,9 +229,16 @@ function Canti() {
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={10} />
 
-      <Model />
+      {/* <Model /> */}
+      <CantiModel />
 
-      <OrbitControls />
+      <OrbitControls
+        // autoRotate={true}
+        // autoRotateSpeed={0.5}
+        maxDistance={20}
+        minDistance={3}
+        enableZoom={false}
+      />
     </Canvas>
   );
 }

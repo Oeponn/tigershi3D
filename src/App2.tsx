@@ -76,10 +76,10 @@ function App() {
       <div className="progressBarContainer">
         <div className="progressBar" />
       </div>
+      <div style={{ height: "8000px" }}></div>
       <div className={styles.canvasWrapper}>
         <Canti />
       </div>
-      <div style={{ height: "8000px", pointerEvents: "none" }} />
     </div>
   );
 }
