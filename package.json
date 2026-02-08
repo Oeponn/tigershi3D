@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "concurrently \"pnpm:dev:vite\" \"pnpm:dev:types\"",
     "dev:vite": "vite",
-    "dev:types": "typed-scss-modules src --outDir src/types --watch --nameFormat camel",
-    "build": "typed-scss-modules src --outDir src/types --nameFormat camel && tsc -b && vite build",
+    "dev:types": "typed-scss-modules \"src/**/*.module.scss\" --outputFolder src/types --watch --nameFormat camel",
+    "build": "typed-scss-modules \"src/**/*.module.scss\" --outputFolder src/types --nameFormat camel && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": ".", 
+    "rootDirs": ["src", "src/types"], 
     "paths": {
-      "*.module.scss": ["src/types/*.module.scss"]
+      "*.module.scss": ["src/*.module.scss", "src/types/*.module.scss"]
     },
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2022",
