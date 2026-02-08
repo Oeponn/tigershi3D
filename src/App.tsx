@@ -18,6 +18,7 @@ import styles from "./App.module.scss";
 import Canti from "./components/Canti";
 import ProgressBar from "./components/ProgressBar";
 import { progressBar } from "./components/ProgressBar.module.scss";
+import { cls } from "./utils/domReferenceHelpers";
 
 console.log("Progress bar class name:", progressBar);
 
@@ -40,13 +41,12 @@ function App() {
           axis: "y",
           enter: "top 150px",
           leave: "bottom bottom",
-          // sync: "play reverse play reverse",
           sync: "play reverse",
           debug: true,
         }),
       });
 
-      animate(`.${progressBar}`, {
+      animate(cls(progressBar), {
         width: ["0%", "100%"],
         easing: "linear",
         autoplay: onScroll({
@@ -54,15 +54,7 @@ function App() {
           axis: "y",
           enter: "top top",
           leave: "bottom bottom",
-          // sync: true,
-          sync: 0.8,
-          // debug: true,
-          onEnter: () => {
-            console.log("Entered progress bar animation");
-          },
-          onLeave: () => {
-            console.log("Left progress bar animation");
-          },
+          sync: 0.5,
         }),
       });
     });
