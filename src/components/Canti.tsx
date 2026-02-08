@@ -220,8 +220,8 @@ function CantiModel() {
 function Canti() {
   return (
     <Canvas
-      camera={{ position: [5, -5, 5], fov: 35 }}
-      // camera={{ position: [0, 0, 5], fov: 70 }}
+      // camera={{ position: [5, -5, 5], fov: 35 }}
+      camera={{ position: [0, 0, 5], fov: 55 }}
       // camera={{ position: [0, 0, 250], fov: 1 }}
       style={{ width: "100vw", height: "100vh" }}
       gl={{ antialias: true, toneMapping: THREE.NoToneMapping }}

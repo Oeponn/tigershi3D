@@ -1,5 +1,4 @@
 .progressBarContainer {
-  width: 350px;
   height: 35px;
   border: 1px solid #007acc;
   background-color: #242424;
@@ -12,9 +11,13 @@
   justify-content: flex-start;
   align-items: center;
   padding: 0 1rem;
-  box-sizing: border-box;
   overflow: hidden;
   opacity: 0;
+
+  width: auto;
+  left: 4rem;
+  right: 4rem;
+  box-sizing: content-box;
 }
 
 .progressBar {
@@ -22,4 +25,13 @@
   height: 20%;
   border-radius: 2px;
   background-color: #007acc;
+}
+
+@media (min-width: 1024px) {
+  .progressBarContainer {
+    width: 350px;
+    bottom: 4rem;
+    right: right;
+    left: revert;
+  }
 }
