@@ -40,6 +40,14 @@ export default [
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
 
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+
       // "@react-three/no-new-in-loop": "warn",
       // "@react-three/no-clone-in-loop": "warn",
       // "@react-three/no-three-objects-in-state": "warn",
