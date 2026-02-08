@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 
-// import App from "../App";
-import App from "../App2";
+import App from "../App";
 import styles from "./landing.module.scss";
 
 export default function Landing() {
