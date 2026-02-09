@@ -34,7 +34,10 @@ function ApplyCameraState({
 }) {
   const desiredPos = useRef(new THREE.Vector3());
   const desiredTarget = useRef(new THREE.Vector3());
-  const desiredEuler = useRef(new THREE.Euler());
+  const baseQuaternion = useRef(new THREE.Quaternion());
+  const rotationQuaternion = useRef(new THREE.Quaternion());
+  const finalQuaternion = useRef(new THREE.Quaternion());
+  const euler = useRef(new THREE.Euler());
 
   useFrame(() => {
     const cam = cameraRef.current;
@@ -53,22 +56,40 @@ function ApplyCameraState({
       cam.updateProjectionMatrix();
     }
 
-    // Apply rotation if provided
-    if (s.rx !== undefined || s.ry !== undefined || s.rz !== undefined) {
-      if (s.rx !== undefined) cam.rotation.x = s.rx;
-      if (s.ry !== undefined) cam.rotation.y = s.ry;
-      if (s.rz !== undefined) cam.rotation.z = s.rz;
-    }
-
     const controls = controlsRef.current;
     if (controls) {
       controls.target.lerp(desiredTarget.current, smoothing);
-      // Skip controls.update() to avoid overriding camera rotation
-      // controls.update();
     }
-    // else {
-    //   cam.lookAt(desiredTarget.current);
-    // }
+
+    // Calculate base rotation from lookAt direction
+    // Temporarily set camera to look at target to get the base quaternion
+    cam.lookAt(desiredTarget.current);
+    baseQuaternion.current.copy(cam.quaternion); // Apply relative rotations if provided
+    if (s.rx !== undefined || s.ry !== undefined || s.rz !== undefined) {
+      // Create a quaternion from the euler angles (rx, ry, rz)
+      euler.current.set(s.rx || 0, s.ry || 0, s.rz || 0, "YXZ");
+      rotationQuaternion.current.setFromEuler(euler.current);
+
+      // Combine: base rotation first, then apply relative rotation
+      // This applies the rotation in camera's local space
+      finalQuaternion.current
+        .copy(baseQuaternion.current)
+        .multiply(rotationQuaternion.current);
+      cam.quaternion.copy(finalQuaternion.current);
+
+      // Debug: log rz transitions
+      if (s.rz !== undefined) {
+        // console.log(
+        //   `rz: ${(s.rz * (180 / Math.PI)).toFixed(1)}° | pos: (${s.x.toFixed(1)}, ${s.y.toFixed(1)}, ${s.z.toFixed(1)}) | target: (${s.tx}, ${s.ty}, ${s.tz})`,
+        // );
+        // console.log(
+        //   `baseQuat: (${baseQuaternion.current.x.toFixed(3)}, ${baseQuaternion.current.y.toFixed(3)}, ${baseQuaternion.current.z.toFixed(3)}, ${baseQuaternion.current.w.toFixed(3)})`,
+        // );
+        // console.log(
+        //   `camera.z rotation: ${(cam.rotation.z * (180 / Math.PI)).toFixed(2)}° | camera.y rotation: ${(cam.rotation.y * (180 / Math.PI)).toFixed(2)}°`,
+        // );
+      }
+    }
   });
 
   return null;

@@ -83,27 +83,27 @@ function App() {
       const cam = cameraStateRef.current;
 
       animate(cam, {
-        // keyframes: [
-        //   initialCameraState,
-        //   { x: 0, y: 0, z: 50, tx: 0, ty: 0, tz: 0, fov: 65 },
-        //   { x: 0, y: 0, z: 150, tx: 0, ty: 0, tz: 0, fov: 65 },
-        // ],
         x: [
           { to: 5, ease: "inOut(2)" },
+          { to: 0, ease: "inOut(2)" },
           { to: 0, ease: "inOut(2)" },
         ],
         y: [
           { to: 5, ease: "inOut(2)" },
           { to: 10, ease: "inOut(2)" },
+          { to: 0, ease: "inOut(2)" },
         ],
         z: [
           { to: 5, ease: "inOut(2)" },
           { to: 0, ease: "inOut(2)" },
+          { to: 5, ease: "inOut(2)" },
         ],
-        // tx: [0],
-        // ty: [0],
-        // tz: [0],
-        // fov: [65, 65],
+        // rz: [
+        //   { to: 0, ease: "inOut(2)" },
+        //   { to: 0, ease: "inOut(2)" },
+        //   { to: Math.PI, ease: "inOut(2)" },
+        //   { to: 0, ease: "inOut(2)" },
+        // ],
         ease: "linear",
         autoplay: onScroll({
           container: cls(styles.scrollContainer),
@@ -118,10 +118,6 @@ function App() {
             // console.log("Camera state updated:", { ...cam });
           },
         }),
-        // autoplay: true,
-        // loop: true,
-        // alternate: true,
-        // duration: 1000,
       });
 
       // Camera rotation animation - 180 degree loop
