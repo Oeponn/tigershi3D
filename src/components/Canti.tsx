@@ -55,24 +55,20 @@ function ApplyCameraState({
 
     // Apply rotation if provided
     if (s.rx !== undefined || s.ry !== undefined || s.rz !== undefined) {
-      desiredEuler.current.set(
-        s.rx ?? cam.rotation.x,
-        s.ry ?? cam.rotation.y,
-        s.rz ?? cam.rotation.z,
-      );
-      cam.quaternion.slerp(
-        new THREE.Quaternion().setFromEuler(desiredEuler.current),
-        smoothing,
-      );
+      if (s.rx !== undefined) cam.rotation.x = s.rx;
+      if (s.ry !== undefined) cam.rotation.y = s.ry;
+      if (s.rz !== undefined) cam.rotation.z = s.rz;
     }
 
     const controls = controlsRef.current;
     if (controls) {
       controls.target.lerp(desiredTarget.current, smoothing);
-      controls.update();
-    } else {
-      cam.lookAt(desiredTarget.current);
+      // Skip controls.update() to avoid overriding camera rotation
+      // controls.update();
     }
+    // else {
+    //   cam.lookAt(desiredTarget.current);
+    // }
   });
 
   return null;
@@ -228,6 +224,17 @@ function Canti({
   const controlsRef = useRef<any>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera>(null);
 
+  // Simple camera rotation on z-axis
+  // const CameraRotator = () => {
+  //   useFrame(({ clock }) => {
+  //     if (cameraRef.current) {
+  //       cameraRef.current.rotation.z =
+  //         Math.sin(clock.elapsedTime * 0.5) * (Math.PI / 4);
+  //     }
+  //   });
+  //   return null;
+  // };
+
   return (
     <Canvas
       style={{ width: "100vw", height: "100vh" }}
@@ -254,9 +261,11 @@ function Canti({
         controlsRef={controlsRef}
       />
 
+      {/* <CameraRotator /> */}
+
       <OrbitControls
         ref={controlsRef}
-        enableRotate={false}
+        // enableRotate={false}
         enablePan={false}
         enableZoom={false}
       />

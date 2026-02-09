@@ -16,16 +16,20 @@ import type { CameraState } from "./types/camera";
 import { cls } from "./utils/domReferenceHelpers";
 
 const initialCameraState: CameraState = {
+  // Camera position
   x: 0,
-  z: 5,
   y: 0,
+  z: 5,
+  // Camera points at coordinates
   tx: 0,
   ty: 0,
   tz: 0,
-  fov: 65,
+  // Camera rotation
   rx: 0,
   ry: 0,
   rz: 0,
+  // Camera field of view
+  fov: 65,
 };
 function App() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -87,20 +91,14 @@ function App() {
         x: [
           { to: 5, ease: "inOut(2)" },
           { to: 0, ease: "inOut(2)" },
-          { to: 0, ease: "inOut(2)" },
-          // { to: 0, ease: "inOut(2)" },
-        ],
-        z: [
-          { to: 5, ease: "inOut(2)" },
-          { to: 0, ease: "inOut(2)" },
-          { to: 0, ease: "inOut(2)" },
-          // { to: 5, ease: "inOut(2)" },
         ],
         y: [
           { to: 5, ease: "inOut(2)" },
           { to: 10, ease: "inOut(2)" },
-          { to: 10, ease: "inOut(2)" },
-          // { to: 0, ease: "inOut(2)" },
+        ],
+        z: [
+          { to: 5, ease: "inOut(2)" },
+          { to: 0, ease: "inOut(2)" },
         ],
         // tx: [0],
         // ty: [0],
@@ -125,6 +123,15 @@ function App() {
         // alternate: true,
         // duration: 1000,
       });
+
+      // Camera rotation animation - 180 degree loop
+      // animate(cam, {
+      //   rz: [
+      //     { to: Math.PI / 10, duration: 3000, easing: "easeInOutQuad" },
+      //     { to: 0, duration: 3000, easing: "easeInOutQuad" },
+      //   ],
+      //   loop: true,
+      // });
     });
 
     return () => {
