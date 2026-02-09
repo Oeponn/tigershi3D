@@ -19,10 +19,6 @@ function clamp01(x: number) {
   return Math.max(0, Math.min(1, x));
 }
 
-/**
- * Reads progressRef.current.p (0..1) and moves the camera around the model.
- * Works well with OrbitControls if we update controls.target + call update().
- */
 function ApplyCameraState({
   cameraRef,
   cameraStateRef,
@@ -54,6 +50,7 @@ function ApplyCameraState({
     desiredTarget.current.set(s.tx, s.ty, s.tz);
 
     cam.position.lerp(desiredPos.current, smoothing);
+    // cam.position.copy(desiredPos.current);
 
     // fov (PerspectiveCamera only)
     if (cam.fov !== s.fov) {
@@ -62,8 +59,10 @@ function ApplyCameraState({
     }
 
     const controls = controlsRef.current;
+    controls.target.copy(desiredTarget.current);
     if (controls) {
       controls.target.lerp(desiredTarget.current, smoothing);
+      // controls.target.copy(desiredTarget.current);
       controls.update();
     } else {
       cam.lookAt(desiredTarget.current);
@@ -215,10 +214,6 @@ function CantiModel() {
   );
 }
 
-/**
- * NOTE: In React 19, `ref` is just a normal prop, but you don’t even need it here.
- * We pass in a progressRef (a stable object) that animejs mutates.
- */
 function Canti({
   cameraStateRef,
 }: {
@@ -237,19 +232,17 @@ function Canti({
 
   return (
     <Canvas
-      // Don't pass camera here as a plain object if you plan to mutate it.
-      // We'll mount our own PerspectiveCamera as the default camera.
       style={{ width: "100vw", height: "100vh" }}
       gl={{ antialias: true, toneMapping: THREE.NoToneMapping }}
     >
-      {/* Make this the default camera */}
       <PerspectiveCamera
         ref={cameraRef}
         makeDefault
-        position={[0, 0, 6]}
-        fov={55}
+        // position={[0, 0, 6]}
+        // fov={55}
         near={0.1}
         far={1000}
+        rotateY={Math.PI / 2}
       />
 
       <ambientLight intensity={0.5} />
@@ -265,8 +258,9 @@ function Canti({
 
       <OrbitControls
         ref={controlsRef}
-        maxDistance={20}
-        minDistance={3}
+        // dampingFactor={1}
+        enableRotate={false}
+        enablePan={false}
         enableZoom={false}
       />
     </Canvas>

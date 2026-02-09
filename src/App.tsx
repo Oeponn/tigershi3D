@@ -1,4 +1,11 @@
-import { animate, createScope, onScroll, type Scope } from "animejs";
+import {
+  animate,
+  createScope,
+  onScroll,
+  type Scope,
+  spring,
+  steps,
+} from "animejs";
 import { useEffect, useRef } from "react";
 
 import styles from "./App.module.scss";
@@ -7,21 +14,23 @@ import ProgressBar from "./components/ProgressBar";
 import { progressBar } from "./components/ProgressBar.module.scss";
 import { cls } from "./utils/domReferenceHelpers";
 
+const initialCameraState = {
+  x: 0,
+  z: 5,
+  y: 0,
+  tx: 0,
+  ty: 0,
+  tz: 0,
+  fov: 65,
+};
+
 function App() {
   const rootRef = useRef<HTMLDivElement>(null);
   const $scope = useRef<Scope | null>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   // This is what animejs will mutate (no rerenders)
-  const cameraStateRef = useRef({
-    x: 0,
-    y: 0,
-    z: 6, // camera position
-    tx: 0,
-    ty: 0,
-    tz: 0, // look-at target / OrbitControls target
-    fov: 55,
-  });
+  const cameraStateRef = useRef(initialCameraState);
 
   useEffect(() => {
     $scope.current = createScope({ root: rootRef }).add(() => {
@@ -31,53 +40,87 @@ function App() {
         opacity: [0, 1],
         y: [100, 0],
         duration: 300,
-        easing: "linear",
+        ease: "linear",
         autoplay: onScroll({
           target: cls(styles.scrollContainer),
           axis: "y",
           enter: "top 150px",
           leave: "bottom bottom",
           sync: "play reverse",
-          // debug: true,
+          debug: true,
         }),
       });
 
       const innerBar = progressBarContainer.querySelector(cls(progressBar))!;
       animate(innerBar, {
-        width: ["0%", "100%"],
-        easing: "linear",
+        // width: [{ to: "100%", ease: steps(20, false) }],
+        width: [{ to: "100%" }],
+        ease: "linear",
+        // loop: true,
+        // autoplay: true,
         autoplay: onScroll({
           target: cls(styles.scrollContainer),
           axis: "y",
           enter: "top top",
           leave: "bottom bottom",
           sync: 0.5,
+          // onEnter: () => {
+          //   console.log("XXX Entered scroll trigger");
+          // },
+          // onLeave: () => {
+          //   console.log("XXX Left scroll trigger");
+          // },
         }),
       });
 
       const cam = cameraStateRef.current;
 
-      // ---- Camera progress on scroll (NEW) ----
-      // This ties p:0 -> p:1 to scroll progress.
       animate(cam, {
-        // keyframes define the path
-        keyframes: [
-          { x: 0, y: 0, z: 5, tx: 0, ty: 0, tz: 0, fov: 65 },
-          { x: 0, y: 0, z: 5, tx: 0, ty: 0, tz: 0, fov: 65 },
+        // keyframes: [
+        //   initialCameraState,
+        //   { x: 0, y: 0, z: 50, tx: 0, ty: 0, tz: 0, fov: 65 },
+        //   { x: 0, y: 0, z: 150, tx: 0, ty: 0, tz: 0, fov: 65 },
+        // ],
+        x: [
+          { to: 5, ease: "inOut(2)" },
+          { to: 0, ease: "inOut(2)" },
+          { to: 0, ease: "inOut(2)" },
+          // { to: 0, ease: "inOut(2)" },
         ],
-        easing: "linear",
-        // autoplay: onScroll({
-        //   target: cls(styles.scrollContainer),
-        //   axis: "y",
-        //   enter: "top top",
-        //   leave: "bottom bottom",
-        //   sync: 0.5,
-        //   debug: true,
-        // }),
-        autoplay: true,
-        loop: true,
-        alternate: true,
-        duration: 5000,
+        z: [
+          { to: 5, ease: "inOut(2)" },
+          { to: 0, ease: "inOut(2)" },
+          { to: 0, ease: "inOut(2)" },
+          // { to: 5, ease: "inOut(2)" },
+        ],
+        y: [
+          { to: 5, ease: "inOut(2)" },
+          { to: 10, ease: "inOut(2)" },
+          { to: 10, ease: "inOut(2)" },
+          // { to: 0, ease: "inOut(2)" },
+        ],
+        // tx: [0],
+        // ty: [0],
+        // tz: [0],
+        // fov: [65, 65],
+        ease: "linear",
+        autoplay: onScroll({
+          container: cls(styles.scrollContainer),
+          target: cls(styles.scrollContainer),
+          axis: "y",
+          enter: "top 150px",
+          leave: "bottom bottom",
+          // sync: 0.5,
+          sync: 1,
+          debug: true,
+          onUpdate: () => {
+            // console.log("Camera state updated:", { ...cam });
+          },
+        }),
+        // autoplay: true,
+        // loop: true,
+        // alternate: true,
+        // duration: 1000,
       });
     });
 

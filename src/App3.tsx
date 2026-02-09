@@ -43,7 +43,7 @@ function App() {
 
       animate(".progressBar", {
         width: ["0%", "100%"],
-        easing: "linear",
+        ease: "linear",
         autoplay: onScroll({
           // container: ".scrollContainer",
           target: ".scrollContainer",
@@ -66,7 +66,7 @@ function App() {
         opacity: [0, 1],
         y: [100, 0],
         duration: 300,
-        easing: "linear",
+        ease: "linear",
         autoplay: onScroll({
           target: ".scrollContainer",
           axis: "y",
