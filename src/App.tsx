@@ -3,8 +3,8 @@ import {
   createScope,
   onScroll,
   type Scope,
-  spring,
-  steps,
+  // spring,
+  // steps,
 } from "animejs";
 import { useEffect, useRef } from "react";
 
@@ -12,9 +12,10 @@ import styles from "./App.module.scss";
 import Canti from "./components/Canti";
 import ProgressBar from "./components/ProgressBar";
 import { progressBar } from "./components/ProgressBar.module.scss";
+import type { CameraState } from "./types/camera";
 import { cls } from "./utils/domReferenceHelpers";
 
-const initialCameraState = {
+const initialCameraState: CameraState = {
   x: 0,
   z: 5,
   y: 0,
@@ -22,8 +23,10 @@ const initialCameraState = {
   ty: 0,
   tz: 0,
   fov: 65,
+  rx: 0,
+  ry: 0,
+  rz: 0,
 };
-
 function App() {
   const rootRef = useRef<HTMLDivElement>(null);
   const $scope = useRef<Scope | null>(null);

@@ -7,6 +7,8 @@ import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 
+import type { CameraState } from "../types/camera";
+
 extend({ LineSegments2, LineMaterial, LineSegmentsGeometry });
 
 const LINE_WIDTH = 1;
@@ -26,20 +28,13 @@ function ApplyCameraState({
   smoothing = 0.15,
 }: {
   cameraRef: React.RefObject<THREE.PerspectiveCamera | null>;
-  cameraStateRef: React.RefObject<{
-    x: number;
-    y: number;
-    z: number;
-    tx: number;
-    ty: number;
-    tz: number;
-    fov: number;
-  }>;
+  cameraStateRef: React.RefObject<CameraState>;
   controlsRef: React.RefObject<any>;
   smoothing?: number;
 }) {
   const desiredPos = useRef(new THREE.Vector3());
   const desiredTarget = useRef(new THREE.Vector3());
+  const desiredEuler = useRef(new THREE.Euler());
 
   useFrame(() => {
     const cam = cameraRef.current;
@@ -58,11 +53,22 @@ function ApplyCameraState({
       cam.updateProjectionMatrix();
     }
 
+    // Apply rotation if provided
+    if (s.rx !== undefined || s.ry !== undefined || s.rz !== undefined) {
+      desiredEuler.current.set(
+        s.rx ?? cam.rotation.x,
+        s.ry ?? cam.rotation.y,
+        s.rz ?? cam.rotation.z,
+      );
+      cam.quaternion.slerp(
+        new THREE.Quaternion().setFromEuler(desiredEuler.current),
+        smoothing,
+      );
+    }
+
     const controls = controlsRef.current;
-    controls.target.copy(desiredTarget.current);
     if (controls) {
       controls.target.lerp(desiredTarget.current, smoothing);
-      // controls.target.copy(desiredTarget.current);
       controls.update();
     } else {
       cam.lookAt(desiredTarget.current);
@@ -217,15 +223,7 @@ function CantiModel() {
 function Canti({
   cameraStateRef,
 }: {
-  cameraStateRef: React.RefObject<{
-    x: number;
-    y: number;
-    z: number;
-    tx: number;
-    ty: number;
-    tz: number;
-    fov: number;
-  }>;
+  cameraStateRef: React.RefObject<CameraState>;
 }) {
   const controlsRef = useRef<any>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera>(null);
@@ -258,7 +256,6 @@ function Canti({
 
       <OrbitControls
         ref={controlsRef}
-        // dampingFactor={1}
         enableRotate={false}
         enablePan={false}
         enableZoom={false}
